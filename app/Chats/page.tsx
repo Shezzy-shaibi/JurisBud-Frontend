@@ -25,7 +25,7 @@ const Chats = () => {
   useEffect(() => {
     const getChats = async () => {
       try {
-        const response = await apiClient.get('/chat', {
+        const response = await apiClient.get('/chats', {
           headers:
           {
             'Authorization': "Token " + localStorage.getItem('token')

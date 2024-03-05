@@ -84,7 +84,13 @@
     font-family: 'Raleway', sans-serif;
 }
 
-.response{
+.responseBox{
+    width: 500px;
+    height: 500px;
+    background-color: aqua;
+}
+
+.response{  
 
     margin: auto; 
     display: flex; 

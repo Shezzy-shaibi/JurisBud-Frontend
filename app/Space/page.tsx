@@ -4,8 +4,11 @@ import styles from './Space.module.css';
 import Link from 'next/link';
 import EditableTag from "../components/EditableTag";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { apiClient } from "../utils/api";
 
 const Chats = () => {
+    
 return(
 <main>
     <div className={styles.maintab}><MainTab></MainTab></div>

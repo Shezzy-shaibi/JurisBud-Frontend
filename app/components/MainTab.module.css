@@ -42,4 +42,10 @@
     top: 2%;
     }
 
+    .chatList {
+        left: 5%; 
+    width: 100px; 
+    position: absolute;
+    top: 55%;
+    }
 
