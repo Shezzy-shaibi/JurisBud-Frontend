@@ -14,6 +14,16 @@ const MainTab = () => {
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false); // S
   const [chats, setChats] = useState([]);
+  const spaces = [
+    {
+      id: 1,
+      title: "space1",
+    },
+    {
+      id: 2,
+      title: "space2",
+    },
+  ];
 
   const sendRequest = () => {
     setLoading(true); // Start loading
@@ -121,7 +131,7 @@ const MainTab = () => {
             </button>
           </div>
         </Link>
-        <Link href="/Spaces" className={styles.tab}>
+        <Link href="/Space" className={styles.tab}>
           <div className={styles.dashboardTab}>
             <div
               style={{
@@ -157,6 +167,19 @@ const MainTab = () => {
               />
             </button>
           </div>
+          {spaces.map((space) => (
+            <div
+              key={space.id}
+              className={styles.chatItem}
+              style={{
+                marginLeft: "3rem",
+              }}
+            >
+              <Link legacyBehavior href={`/Space/${space.id}`}>
+                <a className={styles.chatTitle}>{space.title}</a>
+              </Link>
+            </div>
+          ))}
         </Link>
         <Link href="/Process" className={styles.tab}>
           <div className={styles.dashboardTab}>

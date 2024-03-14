@@ -1,13 +1,13 @@
-import NoHelloUser from "../components/NoHelloUser";
-import MainTab from "../components/MainTab";
+import NoHelloUser from "../../components/NoHelloUser";
+import MainTab from "../../components/MainTab";
 import styles from "./Space.module.css";
 import Link from "next/link";
-import EditableTag from "../components/EditableTag";
+import EditableTag from "../../components/EditableTag";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { apiClient } from "../utils/api";
+import { apiClient } from "../../utils/api";
 
-const Chats = () => {
+const Chats = ({ params }) => {
   return (
     <main>
       {/* <div className={styles.maintab}><MainTab></MainTab></div> */}
@@ -27,7 +27,7 @@ const Chats = () => {
             />
             <p>&nbsp;&nbsp;Tags</p>
             <div className={styles.tag}>
-              <EditableTag initialText="Tag1"></EditableTag>
+              <EditableTag initialText={`Tag${params.id}`}></EditableTag>
             </div>
           </div>
           <div className={styles.createdAt}>
@@ -53,7 +53,7 @@ const Chats = () => {
       <div className={styles.SecRec}>
         <div className={styles.chatwithTag}>
           <p>Chat Name</p>
-          <EditableTag initialText="Tag2"></EditableTag>
+          <EditableTag initialText={`Tag${params.id}`}></EditableTag>
         </div>
       </div>
       <div className={styles.spaceBackground}>
