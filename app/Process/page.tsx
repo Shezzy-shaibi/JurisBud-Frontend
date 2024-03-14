@@ -64,7 +64,7 @@ const Process = () => {
     return () => clearTimeout(timer);
   }, [inputValue]);
   return (
-    <main>
+    <div>
       <div className={styles.chatName}>
         <h1>Chat name</h1>
       </div>
@@ -106,7 +106,7 @@ const Process = () => {
         />
       </div>
       <NoHelloUser></NoHelloUser>
-    </main>
+    </div>
   );
 };
 

@@ -33,14 +33,25 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html data-theme="light" lang="en">
-      <body className={inter.className}>
+    <html>
+      <body
+        style={{
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
         {showMainTab && <MainTab />}
-        <AuthContext.Provider
-          value={{ isAuth, setIsAuth, username, setUsername }}
+        <div
+          style={{
+            width: "100%",
+          }}
         >
-          {children}
-        </AuthContext.Provider>
+          <AuthContext.Provider
+            value={{ isAuth, setIsAuth, username, setUsername }}
+          >
+            {children}
+          </AuthContext.Provider>
+        </div>
       </body>
     </html>
   );

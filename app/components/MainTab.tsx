@@ -41,6 +41,39 @@ const MainTab = () => {
       });
   };
 
+  const deleteChat = (chatId) => {
+    setLoading(true); // Start loading for deletion process
+
+    // Here you would replace 'your-api-endpoint' with your actual API endpoint
+    // and adjust headers and method according to your API requirements
+
+    apiClient
+      .delete(`/chat/delete/${chatId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Token " + localStorage.getItem("token"),
+        },
+      })
+      .then(() => {
+        // After deleting, fetch the updated list of chats
+        return apiClient.get("/chats", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Token " + localStorage.getItem("token"),
+          },
+        });
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        setChats(data?.chats); // Update the list of chats
+        setLoading(false); // Stop loading
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setLoading(false); // In case of an error, stop the loading as well
+      });
+  };
+
   useEffect(() => {
     sendRequest();
   }, []); // 2000
@@ -168,10 +201,30 @@ const MainTab = () => {
           </div>
           <div className={styles.listing}>
             {!loading
-              ? chats.map((chat) => {
-                  return <div>{chat.title}</div>;
-                })
-              : "loading..."}
+              ? chats.map((chat) => (
+                  <div key={chat.id} className={styles.chatItem}>
+                    <Link legacyBehavior href={`/chat/${chat.id}`}>
+                      <a className={styles.chatTitle}>{chat.title}</a>
+                    </Link>
+                    <button
+                      onClick={() => deleteChat(chat.id)}
+                      disabled={loading} // Disable the button while loading
+                      className={styles.deleteButton}
+                    >
+                      {loading ? (
+                        <span>Loading...</span> // You can replace this with a spinner icon
+                      ) : (
+                        <Image
+                          src="/chat/delete.png" // Put the path to your delete icon here
+                          alt="Delete"
+                          width={20}
+                          height={20}
+                        />
+                      )}
+                    </button>
+                  </div>
+                ))
+              : "Loading..."}
           </div>
         </Link>
         {/* Add more navigation links as needed */}
