@@ -57,6 +57,24 @@
   width: 100%;
 }
 
+.tagsFlex {
+    display: flex;
+    flex-wrap: wrap; /* Allows tags to wrap onto the next line if there's not enough space */
+    gap: 10px; /* Adjust the space between items */
+}
+
+.tagItem {
+    width: 20%; /* Each tag takes up 20% of the width of its container */
+    background-color: #f0f0f0; /* Light grey background, change as needed */
+    padding: 10px; /* Adjust padding as needed */
+    border-radius: 5px; /* Optional: Adds rounded corners */
+    text-align: center; /* Centers the text inside the tag */
+    box-sizing: border-box; /* Ensures padding does not affect the total width */
+    flex-grow: 1; /* Optional: Allows items to grow to fill additional space */
+    max-width: calc(20% - 10px); /* Adjusts the width to account for the gap */
+}
+
+
 .createdAt {
   display: flex;
   flex-direction: row;
