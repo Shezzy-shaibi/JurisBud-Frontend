@@ -14,16 +14,18 @@ const MainTab = () => {
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false); // S
   const [chats, setChats] = useState([]);
-  const spaces = [
-    {
-      id: 1,
-      title: "space1",
-    },
-    {
-      id: 2,
-      title: "space2",
-    },
-  ];
+  const [spaces, setSpaces] = useState([]);
+
+  // const spaces = [
+  //   {
+  //     id: 1,
+  //     title: "space1",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "space2",
+  //   },
+  // ];
 
   const sendRequest = () => {
     setLoading(true); // Start loading
@@ -43,6 +45,25 @@ const MainTab = () => {
         console.log(data);
         setResponse(data);
         setChats(data?.chats);
+        setLoading(false); // Stop loading after the data is received
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setLoading(false); // Stop loading after the data is received
+      });
+
+    apiClient
+      .get("/spaces", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Token " + localStorage.getItem("token"),
+        },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setResponse(data);
+        setSpaces(data);
         setLoading(false); // Stop loading after the data is received
       })
       .catch((error) => {
@@ -167,7 +188,7 @@ const MainTab = () => {
               />
             </button>
           </div>
-          {spaces.map((space) => (
+          {spaces?.map((space) => (
             <div
               key={space.id}
               className={styles.chatItem}
@@ -176,7 +197,7 @@ const MainTab = () => {
               }}
             >
               <Link legacyBehavior href={`/Space/${space.id}`}>
-                <a className={styles.chatTitle}>{space.title}</a>
+                <a className={styles.chatTitle}>{space.name}</a>
               </Link>
             </div>
           ))}
