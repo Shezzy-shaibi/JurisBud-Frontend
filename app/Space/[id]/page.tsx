@@ -21,7 +21,7 @@ interface Tag {
   color: string;
 }
 
-interface Space {
+export interface Space {
   id: number;
   group: Group;
   tags: Tag[];
@@ -64,6 +64,7 @@ const Chats = ({ params }) => {
       {/* <div className={styles.maintab}><MainTab></MainTab></div> */}
       <div className={styles.title}>
         <h1>{space?.name}</h1>
+   
       </div>
       <div className={styles.FirRec}>
         <div className={styles.left}>
