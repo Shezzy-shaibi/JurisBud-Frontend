@@ -45,13 +45,26 @@ const ChatsList = () => {
   // Function to format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
   };
 
   return (
     <>
       <div className={styles.container}>
         <div className={styles.table}>
+          <div className={styles.tableHeader}>
+            <div
+              style={{
+                alignContent: "right",
+                color: "greenyellow",
+                fontSize: "30px",
+              }}
+            >
+              <Link href={`/Process`} legacyBehavior>
+                +
+              </Link>
+            </div>
+          </div>
           <div className={styles.tableHeader}>
             <div className={styles.headerItem}>Ttile</div>
             <div className={styles.headerItem}>Response</div>

@@ -202,7 +202,7 @@ const MainTab = () => {
             </div>
           ))}
         </Link>
-        <Link href="/Process" className={styles.tab}>
+        <Link href="/Chats" className={styles.tab}>
           <div className={styles.dashboardTab}>
             <div
               style={{
