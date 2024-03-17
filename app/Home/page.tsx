@@ -43,7 +43,7 @@ const Home = () => {
           }}
           value={prompt}
         />
-        <Attachment setPrompt={setPrompt} />
+        {/* <Attachment setPrompt={setPrompt} /> */}
       </div>
       <Image
         width={0}
