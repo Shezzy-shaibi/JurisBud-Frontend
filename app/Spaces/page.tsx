@@ -55,7 +55,7 @@ const SpacesList = () => {
             spaces.map((space) => (
               <Link href={`/Space/${space.id}`} key={space.id} passHref>
                 <div className={styles.tableRow}>
-                  <div className={styles.rowItem}>{space.name}</div>
+                  <div className={styles.rowItem}>{space?.name}</div>
                   <div className={styles.rowItem}>
                     {space.tags.map((tag) => (
                       <span
@@ -73,9 +73,9 @@ const SpacesList = () => {
                     ))}
                   </div>
                   <div className={styles.rowItem}>
-                    {formatDate(space.created_at)}
+                    {formatDate(space?.created_at)}
                   </div>
-                  <div className={styles.rowItem}>{space.group.name}</div>
+                  <div className={styles.rowItem}>{space?.group?.name}</div>
                 </div>
               </Link>
             ))}
