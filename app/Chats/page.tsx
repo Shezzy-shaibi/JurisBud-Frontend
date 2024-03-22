@@ -50,48 +50,38 @@ const ChatsList = () => {
 
   return (
     <>
-      <div
-        style={{
-          marginLeft: "15%",
-          backgroundImage: "linear-gradient(to bottom right, #ACE0F9, #FFFFFF)",
-          // Include additional styles as needed
-          height: "100vh", // Example height
-          width: "100%", // Example width
-        }}
-      >
-        <div className={styles.container}>
-          <div className={styles.table}>
-            <div className={styles.tableHeader}>
-              <div
-                style={{
-                  alignContent: "right",
-                  color: "greenyellow",
-                  fontSize: "30px",
-                }}
-              >
-                <Link href={`/Process`} legacyBehavior>
-                  +
-                </Link>
-              </div>
+      <div className={styles.container}>
+        <div className={styles.table}>
+          <div className={styles.tableHeader}>
+            <div
+              style={{
+                alignContent: "right",
+                color: "greenyellow",
+                fontSize: "30px",
+              }}
+            >
+              <Link href={`/Process`} legacyBehavior>
+                +
+              </Link>
             </div>
-            <div className={styles.tableHeader}>
-              <div className={styles.headerItem}>Ttile</div>
-              <div className={styles.headerItem}>Response</div>
-              <div className={styles.headerItem}>Created At</div>
-            </div>
-            {Array.isArray(chats) &&
-              chats.map((chat) => (
-                <Link href={`/chat/${chat.id}`} key={chat.id} passHref>
-                  <div className={styles.tableRow}>
-                    <div className={styles.rowItem}>{chat.title}</div>
-                    <div className={styles.rowItem}>{chat.response}</div>
-                    <div className={styles.rowItem}>
-                      {formatDate(chat.created_at)}
-                    </div>
-                  </div>
-                </Link>
-              ))}
           </div>
+          <div className={styles.tableHeader}>
+            <div className={styles.headerItem}>Ttile</div>
+            <div className={styles.headerItem}>Response</div>
+            <div className={styles.headerItem}>Created At</div>
+          </div>
+          {Array.isArray(chats) &&
+            chats.map((chat) => (
+              <Link href={`/chat/${chat.id}`} key={chat.id} passHref>
+                <div className={styles.tableRow}>
+                  <div className={styles.rowItem}>{chat.title}</div>
+                  <div className={styles.rowItem}>{chat.response}</div>
+                  <div className={styles.rowItem}>
+                    {formatDate(chat.created_at)}
+                  </div>
+                </div>
+              </Link>
+            ))}
         </div>
       </div>
     </>
