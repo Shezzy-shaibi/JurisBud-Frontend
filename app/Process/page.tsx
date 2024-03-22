@@ -30,16 +30,8 @@ const Process = () => {
 
     // Here you would replace 'your-api-endpoint' with your actual API endpoint
     // and adjust headers and body according to your API requirements
-
     apiClient
-      .post("/chat/create", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Token " + localStorage.getItem("token"),
-        },
-        body: JSON.stringify({ prompt: inputValue }),
-      })
-      .then((response) => response.json())
+      .post("/chat/create", { prompt: inputValue })
       .then((data) => {
         console.log(data);
         setResponse(data);

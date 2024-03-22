@@ -57,7 +57,7 @@ const SpacesList = () => {
                 <div className={styles.tableRow}>
                   <div className={styles.rowItem}>{space?.name}</div>
                   <div className={styles.rowItem}>
-                    {space.tags.map((tag) => (
+                    {space?.tags?.map((tag) => (
                       <span
                         key={tag.id}
                         style={{

@@ -1,194 +1,433 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import NoHelloUser from "../../components/NoHelloUser";
-import MainTab from "../../components/MainTab";
-import styles from "./Space.module.css";
+import React, { useEffect, useState } from "react";
+import { apiClient } from "@/app/utils/api"; // Adjust the import path according to your project structure
+import {
+  Container,
+  Grid,
+  Typography,
+  Paper,
+  Chip,
+  Box,
+  Card,
+  CardContent,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText,
+  Checkbox,
+  Button,
+  Avatar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+} from "@mui/material";
+import { Visibility as VisibilityIcon } from "@mui/icons-material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import FolderIcon from "@mui/icons-material/Folder";
+import TagIcon from "@mui/icons-material/Label";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import GroupIcon from "@mui/icons-material/Group"; // Import if using GroupIcon
+import EventNoteIcon from "@mui/icons-material/EventNote"; // Import if using EventNoteIcon
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import Link from "next/link";
-import EditableTag from "../../components/EditableTag";
-import Image from "next/image";
-import { apiClient } from "../../utils/api";
-import { useRouter } from "next/router";
-import FolderDisplay from "@/app/components/Folder.module";
-import ProjectDisplay from "@/app/components/ProjectComponent";
 
-interface Group {
-  id: number;
-  name: string;
-}
+const Space = ({ params }) => {
+  const [space, setSpace] = useState(null);
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
+  const [folders, setFolders] = useState([]);
+  const [chats, setChats] = useState([]);
+  const [folderChats, setFolderChats] = useState([]);
 
-interface Tag {
-  id: number;
-  name: string;
-  color: string;
-}
+  const [selectedChats, setSelectedChats] = useState(new Set());
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
-export interface Space {
-  id: number;
-  group: Group;
-  tags: Tag[];
-  name: string;
-  description: string;
-  created_at: string; // This could also be of type Date if you're converting strings to Date objects
-  owner: number; // Assuming 'owner' refers to the user ID, but you can change the type if needed
-}
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-const folders = [
-  { name: "Team Projects", date: "Apr 2, 2023" },
-  { name: "Collaborations", date: "Apr 2, 2023" },
-  { name: "Personal Projects", date: "Apr 2, 2023" },
-];
+  // Fetch space details
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        apiClient
+          .get(`/spaces/${params.id}`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Token " + localStorage.getItem("token"),
+            },
+          })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
 
-const projects = [
-  { name: "Library Contract", tags: ["Proofreading", "Writing"] },
-  { name: "Agreement Proofreading", tags: ["Proofreading"] },
-  { name: "Acquisition Numerical Assessment", tags: ["Writing", "Analytics"] },
-];
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
-};
-const Chats = ({ params }) => {
-  const [loading, setLoading] = useState(false); // S
-  const [space, setSpace] = useState<Space>();
+            setSpace(data);
+            setLoading(false); // Stop loading after the data is received
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            setLoading(false); // Stop loading after the data is received
+          });
+
+        // Assuming your API has an endpoint to fetch folders for a space
+        apiClient
+          .get(`spaces/${params.id}/folders?space_id=${params.id}`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Token " + localStorage.getItem("token"),
+            },
+          })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+
+            setFolders(data);
+            setLoading(false); // Stop loading after the data is received
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            setLoading(false); // Stop loading after the data is received
+          });
+
+        // setFolders(foldersData);
+      } catch (error) {
+        -console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [params.id]);
 
   useEffect(() => {
-    // You can use the 'id' here
-    if (params.id) {
-      apiClient
-        .get(`/spaces/${params.id}`, {
+    const getChats = async () => {
+      try {
+        const response = await apiClient.get("/chats", {
           headers: {
-            "Content-Type": "application/json",
             Authorization: "Token " + localStorage.getItem("token"),
           },
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-
-          setSpace(data);
-          setLoading(false); // Stop loading after the data is received
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          setLoading(false); // Stop loading after the data is received
         });
-    }
+        if (response.ok) {
+          const data = await response.json();
+          setChats(data.chats);
+        } else if (response.status == 401) {
+          console.log("errorrr");
+        }
+      } catch (err) {
+        console.log("chats errors:", err);
+      }
+    };
+    getChats();
   }, []);
 
+  const handleSelectChat = (chatId) => {
+    const newSelectedChats = new Set(selectedChats);
+    if (newSelectedChats.has(chatId)) {
+      newSelectedChats.delete(chatId);
+    } else {
+      newSelectedChats.add(chatId);
+    }
+    setSelectedChats(newSelectedChats);
+  };
+
+  const assignChatsToFolder = async (folderId) => {
+    try {
+      await apiClient.post(`/assign-chats-to-folder/`, {
+        folder_id: selectedFolderId,
+        chats: Array.from(selectedChats),
+        headers: {
+          Authorization: "Token " + localStorage.getItem("token"),
+        },
+      });
+      // Close dialog and clear selections
+      setDialogOpen(false);
+      setSelectedChats(new Set());
+      // Optionally refresh data here
+    } catch (error) {
+      console.error("Error assigning chats to folder: ", error);
+    }
+  };
+
+  if (loading) return <Typography>Loading...</Typography>;
+  if (error) return <Typography>Error: {error}</Typography>;
+  if (!space) return <Typography>No space data found</Typography>;
+  const handleSetDialogOpen = (id) => {
+    setDialogOpen(true);
+    setSelectedFolderId(id);
+  };
+  const folderDetailSetDialogOpen = (id) => {
+    setDetailDialogOpen(true);
+    const getFolderChats = async () => {
+      try {
+        const response = await apiClient.get(`/chats/folder/${id}`, {
+          headers: {
+            Authorization: "Token " + localStorage.getItem("token"),
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setFolderChats(data.chats);
+        } else if (response.status == 401) {
+          console.log("errorrr");
+        }
+      } catch (err) {
+        console.log("chats errors:", err);
+      }
+    };
+    getFolderChats();
+  };
+
   return (
-    <main>
-      <div
-        style={{
-          marginLeft: "20%",
-          backgroundImage: "linear-gradient(to bottom right, #ACE0F9, #FFFFFF)",
-          // Include additional styles as needed
-          height: "200vh", // Example height
-          width: "100%", // Example width
-        }}
+    <Container maxWidth="lg" sx={{ mt: 4, marginLeft: "20%" }}>
+      <Typography variant="h4" gutterBottom>
+        <FiberManualRecordIcon style={{ color: "#00B884" }} />
+        {space.name}
+      </Typography>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
+          <Paper
+            sx={{
+              p: 3,
+              m: 2,
+              backgroundColor: "whitesmoke",
+              borderRadius: "15px",
+            }}
+          >
+            <Typography variant="h6" gutterBottom component="div">
+              Details
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 1.5,
+                alignItems: "center",
+                mb: 2,
+                p: 1,
+                borderRadius: "4px",
+                backgroundColor: "white",
+              }}
+            >
+              <TagIcon sx={{ verticalAlign: "bottom" }} color="action" />
+              <Typography variant="body1" component="span" sx={{ mr: 1 }}>
+                Tags:
+              </Typography>
+              {space?.tags?.map((tag, index) => (
+                <Chip
+                  key={index}
+                  label={tag.name}
+                  variant="outlined"
+                  sx={{ mr: 0.5, mb: 0.5 }}
+                  icon={
+                    <Avatar sx={{ width: 24, height: 24, bgcolor: tag.color }}>
+                      T
+                    </Avatar>
+                  }
+                />
+              ))}
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                mb: 3,
+                p: 1,
+                borderRadius: "4px",
+                backgroundColor: "white",
+              }}
+            >
+              <GroupIcon sx={{ mr: 1 }} color="primary" />
+              <Typography variant="body1">
+                Group: {space?.group?.name}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                p: 1,
+                borderRadius: "4px",
+                backgroundColor: "white",
+              }}
+            >
+              <EventNoteIcon sx={{ mr: 1 }} color="secondary" />
+              <Typography variant="body1">
+                Created At: {new Date(space.created_at).toLocaleDateString()}
+              </Typography>
+            </Box>
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Typography variant="h6" gutterBottom>
+            Description
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            {space.description}
+          </Typography>
+        </Grid>
+      </Grid>
+      <Paper sx={{ p: 2, m: 2, backgroundColor: "whitesmoke" }}>
+        <Typography variant="h6" gutterBottom>
+          Folders
+        </Typography>
+        <Grid container spacing={2}>
+          {folders.map((folder) => (
+            <Grid item xs={12} sm={6} md={4} key={folder.id}>
+              {" "}
+              {/* Adjust the sizes as needed */}
+              <Card
+                sx={{
+                  mb: 2,
+                  width: "80%",
+                  height: "100%",
+                  cursor: "pointer",
+                  display: "flex",
+                }}
+              >
+                <CardContent
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                  onClick={() => folderDetailSetDialogOpen(folder.id)}
+                >
+                  <Typography variant="body2">
+                    <FolderIcon sx={{ verticalAlign: "middle", mr: 1 }} />
+                    {folder.name}
+                  </Typography>
+                </CardContent>
+                <IconButton
+                  size="small"
+                  color="primary"
+                  onClick={() => handleSetDialogOpen(folder.id)}
+                >
+                  <AddCircleOutlineIcon />
+                </IconButton>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Paper>
+
+      <Paper sx={{ p: 2, m: 2, backgroundColor: "whitesmoke" }}>
+        <Typography variant="h6" gutterBottom>
+          Projects
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={4}>
+            {" "}
+            {/* Adjust the sizes as needed */}
+            <Card sx={{ mb: 2, width: "100%", height: "100%" }}>
+              <CardContent
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography variant="body2">
+                  <FolderIcon sx={{ verticalAlign: "middle", mr: 1 }} />
+                  Project 1
+                </Typography>
+                <IconButton size="small" color="primary">
+                  <ApartmentIcon />
+                </IconButton>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Paper>
+      <Dialog
+        style={{ padding: "30px" }}
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
       >
-        {/* <div className={styles.maintab}><MainTab></MainTab></div> */}
-        <div className={styles.title}>
-          <h1>{space?.name}</h1>
-        </div>
-        <div className={styles.FirRec}>
-          <div className={styles.left}>
-            <div className={styles.tags}>
-              <Image
-                width={0}
-                height={0}
-                sizes="100vw"
-                src="/space/tags.png"
-                className={styles.pic}
-                alt="tags"
+        <DialogTitle>Select Chats to Assign</DialogTitle>
+        <List>
+          {chats.map((chat) => (
+            <ListItem
+              key={chat.id}
+              dense
+              button
+              onClick={() => handleSelectChat(chat.id)}
+            >
+              <Checkbox
+                checked={selectedChats.has(chat.id)}
+                edge="start"
+                tabIndex={-1}
+                disableRipple
               />
-              <p>&nbsp;&nbsp;Tags: </p>
+              <ListItemText primary={chat.title} />
+            </ListItem>
+          ))}
+          <Button
+            className="btn btn-primary"
+            onClick={() => assignChatsToFolder(1)}
+          >
+            Assign
+          </Button>
+        </List>
+      </Dialog>
 
-              <EditableTag
-                initialText={`T-${space?.tags[0]?.name}`}
-              ></EditableTag>
-            </div>
-            <br></br>
-            <div className={styles.tags}>
-              <Image
-                width={0}
-                height={0}
-                sizes="100vw"
-                src="/space/tags.png"
-                className={styles.pic}
-                alt="tags"
-              />
-              <p>&nbsp;&nbsp;Groups: </p>
-
-              <div className={styles.time}>
-                <p>{space?.group?.name}</p>
-              </div>
-            </div>
-            <div className={styles.createdAt}>
-              <Image
-                width={0}
-                height={0}
-                sizes="100vw"
-                src="/space/createdAt.png"
-                className={styles.pic}
-                alt="created at"
-              />
-              <p>&nbsp;&nbsp;Created At</p>
-              <div className={styles.time}>
-                <p>{formatDate(space?.created_at)}</p>
-              </div>
-            </div>
-          </div>
-          <div className={styles.description}>
-            <h2 style={{ fontWeight: "bold" }}>Description</h2>
-            <div style={{ width: "50%" }}>{space?.description}</div>
-          </div>
-        </div>
-
-        <div className={styles.spaceBackground}>
-          <Image
-            width={0}
-            height={0}
-            sizes="100vw"
-            src="/process/background2.png"
-            alt="process"
-          />
-        </div>
-        <NoHelloUser></NoHelloUser>
-
-        <div className={styles.SecRec}>
-          <div className={styles.chatwithTag}>
-            <h2 style={{ fontWeight: "bold" }}>Folders</h2>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <FolderDisplay
-                text="Folder 1 "
-                date={formatDate(space?.created_at)}
-              />
-              <FolderDisplay
-                text="Folder 2 "
-                date={formatDate(space?.created_at)}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.thirdRec}>
-          <h2 style={{ fontWeight: "bold" }}>Projects</h2>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <ProjectDisplay
-              text="Project 1 "
-              date={formatDate(space?.created_at)}
-            />
-            <ProjectDisplay
-              text="Project 2 "
-              date={formatDate(space?.created_at)}
-            />
-          </div>
-        </div>
-      </div>
-    </main>
+      <Dialog
+        style={{ padding: "30px" }}
+        open={detailDialogOpen}
+        onClose={() => setDetailDialogOpen(false)}
+        fullWidth
+        maxWidth="md" // Adjust size as needed
+      >
+        <DialogTitle>Here are all the chats</DialogTitle>
+        <TableContainer component={Paper}>
+          <Table aria-label="chats table">
+            <TableHead style={{ backgroundColor: "whitesmoke" }}>
+              <TableRow>
+                <TableCell padding="checkbox"></TableCell>
+                <TableCell>Title</TableCell>
+                <TableCell>Response (truncated)</TableCell>
+                <TableCell>Created At</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {folderChats.map((chat) => (
+                <TableRow key={chat.id}>
+                  <TableCell padding="checkbox"></TableCell>
+                  <TableCell component="th" scope="row">
+                    {chat.title}
+                  </TableCell>
+                  <TableCell>
+                    {`${chat.response.substring(0, 50)}...`}{" "}
+                    {/* Adjust truncation as needed */}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(chat.created_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title="View Details">
+                      <IconButton>
+                        <Link href={`/chat/${chat.id}`} legacyBehavior>
+                          <VisibilityIcon />
+                        </Link>
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Dialog>
+    </Container>
   );
 };
 
-export default Chats;
+export default Space;

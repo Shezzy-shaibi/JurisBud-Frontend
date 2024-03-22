@@ -17,7 +17,7 @@ const CreateSpace = () => {
   // Function to add a new tag
   const addTag = () => {
     if (newTag && !tags.find((t) => t.name === newTag)) {
-      setTags([...tags, { id: Date.now(), name: newTag, color: "#FFFFFF" }]); // Mock ID and color
+      setTags([...tags, { name: newTag, color: "#05a386" }]); // Mock ID and color
       setNewTag("");
     }
   };
@@ -100,7 +100,7 @@ const CreateSpace = () => {
             onKeyUp={(e) => e.key === "Enter" && addTag()}
           />
           <button type="button" onClick={addTag} className={styles.tagButton}>
-            Add Tag
+            Add
           </button>
         </div>
         <div className={styles.tagsDisplay}>
