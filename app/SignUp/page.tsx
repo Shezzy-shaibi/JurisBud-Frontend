@@ -42,12 +42,19 @@ export default function SignUp() {
       // setIsAuth(true);
       // redirect('/Home');
     } catch (err) {
-      console.log(err);
-      setErrors((prev) => ({
-        ...prev,
-        password: "Something went wrong.\n",
-        err,
-      }));
+      console.log("Signup error:", err);
+
+      // Assuming err.cause contains the error response from the API
+      // Adjust the structure based on how the error is actually delivered
+      const errorResponse = err.cause || {}; // Fallback to empty object if err.cause is undefined
+
+      // Update state with errors returned from the API
+      // Using the structure based on your provided error examples
+      setErrors({
+        password: errorResponse.password ? errorResponse.password[0] : "",
+        email: errorResponse.email ? errorResponse.email[0] : "",
+        name: errorResponse.name ? errorResponse.name[0] : "",
+      });
     }
   };
 
@@ -100,9 +107,7 @@ export default function SignUp() {
                 placeholder="Full Name"
               ></input>
               <br></br>
-              {errors?.name && (
-                <span className="ml-01my-2 text-error">{errors.name}</span>
-              )}
+
               <input
                 type="text"
                 name="email"
@@ -110,16 +115,31 @@ export default function SignUp() {
                 placeholder="Email"
               ></input>
               <br></br>
-              {errors?.email && (
-                <span className="ml-1 my-2 text-error">{errors.email}</span>
-              )}
+
               <HidePwd name="password"></HidePwd>
               {errors?.password && (
                 <span
                   className="ml-1 text-error"
-                  style={{ marginBottom: "-10px" }}
+                  style={{ marginBottom: "10px" }}
                 >
-                  {errors.password}
+                  {errors.password}{" "}
+                  {/* Corrected from errors.email to errors.password */}
+                </span>
+              )}
+              {errors?.email && (
+                <span
+                  className="ml-1 my-2 text-error"
+                  style={{ marginBottom: "10px" }}
+                >
+                  {errors.email}
+                </span>
+              )}
+              {errors?.name && (
+                <span
+                  className="ml-01my-2 text-error"
+                  style={{ marginBottom: "10px" }}
+                >
+                  {errors.name}
                 </span>
               )}
             </div>
