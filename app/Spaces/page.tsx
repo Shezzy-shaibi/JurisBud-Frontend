@@ -35,14 +35,40 @@ const SpacesList = () => {
           <div className={styles.tableHeader}>
             <div
               style={{
-                alignContent: "right",
-                color: "greenyellow",
-                fontSize: "30px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "10px",
               }}
             >
-              <Link href={`/create-space`} legacyBehavior>
-                +
-              </Link>
+              <div
+                style={{
+                  display: "flex",
+                  flexGrow: 1,
+                  justifyContent: "flex-start",
+                }}
+              >
+                <Link href={`/create-space`} legacyBehavior>
+                  <a
+                    style={{
+                      fontSize: "30px",
+                      color: "white",
+                      textDecoration: "none",
+                    }}
+                    className="btn btn-primary"
+                  >
+                    +
+                  </a>
+                </Link>
+              </div>
+              <div
+                className="text-center"
+                style={{ flexGrow: 2, textAlign: "center", fontSize: "24px" }}
+              >
+                Spaces
+              </div>
+              <div style={{ flexGrow: 1 }}></div>{" "}
+              {/* This empty div helps maintain the space and alignment */}
             </div>
           </div>
           <div className={styles.tableHeader}>

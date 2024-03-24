@@ -15,9 +15,17 @@ import { apiClient } from "../utils/api";
 
 const Process = () => {
   const [inputValue, setInputValue] = useState("");
+  const [name, setName] = useState("Chat Name");
+
   // State to store the response from the API (if needed)
+  const queryParams = new URLSearchParams(window.location.search);
+  const promptParam = queryParams.get("prompt");
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false); // State to track loading
+
+  useEffect(() => {
+    setInputValue(promptParam);
+  }, [promptParam]);
 
   // Function to handle input changes
   const handleInputChange = (e) => {
@@ -31,7 +39,7 @@ const Process = () => {
     // Here you would replace 'your-api-endpoint' with your actual API endpoint
     // and adjust headers and body according to your API requirements
     apiClient
-      .post("/chat/create", { prompt: inputValue })
+      .post("/chat/create", { prompt: inputValue, name: name })
       .then((data) => {
         console.log(data);
         setResponse(data);
@@ -58,7 +66,12 @@ const Process = () => {
   return (
     <div>
       <div className={styles.chatName}>
-        <h1>Chat name</h1>
+        <input
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+          value={name}
+        />{" "}
       </div>
       <div className={styles.prompt}>
         <Image
@@ -79,10 +92,20 @@ const Process = () => {
         ></input>
       </div>
 
-      <div className={styles.tasks}>
-        <p className={styles.res}>
+      <div className={styles.tasks} style={{ marginRight: "20%" }}>
+        <div
+          className={styles.res}
+          style={{
+            marginLeft: "20%",
+            marginRight: "25%",
+            padding: "40px",
+            backgroundColor: "whitesmoke",
+            borderRadius: "5px",
+          }}
+        >
           {loading ? "Loading..." : response?.chat?.response}
-        </p>
+        </div>
+
         {/* <h1 className={styles.taskTag}>Requested Tasks</h1> */}
 
         {/* <p className={styles.taskDes}>Tasks are split to descriptions, with Agents supervision and handling</p> */}
